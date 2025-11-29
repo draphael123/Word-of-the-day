@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word of the Day - Expand Your Vocabulary</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title">Word of the Day</h1>
+            <p class="subtitle">Expand your vocabulary, one word at a time</p>
+            <div class="date-display" id="dateDisplay"></div>
+        </header>
+
+        <main>
+            <div class="word-card" id="wordCard">
+                <div class="word-header">
+                    <h2 class="word" id="word">Loading...</h2>
+                    <div class="pronunciation" id="pronunciation"></div>
+                </div>
+                
+                <div class="word-content">
+                    <div class="definition-section">
+                        <h3 class="section-title">Definition</h3>
+                        <p class="definition" id="definition"></p>
+                    </div>
+
+                    <div class="example-section">
+                        <h3 class="section-title">Example</h3>
+                        <p class="example" id="example"></p>
+                    </div>
+
+                    <div class="etymology-section">
+                        <h3 class="section-title">Etymology</h3>
+                        <p class="etymology" id="etymology"></p>
+                    </div>
+
+                    <div class="part-of-speech">
+                        <span class="pos-badge" id="partOfSpeech"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-secondary" id="prevWordBtn" title="View previous word">
+                    ← Previous
+                </button>
+                <button class="btn-primary" id="shareBtn" title="Share this word">
+                    Share
+                </button>
+                <button class="btn-secondary" id="nextWordBtn" title="View next word">
+                    Next →
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Come back tomorrow for a new word!</p>
+        </footer>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
