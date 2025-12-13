@@ -3,82 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word of the Day — The Antiquarian's Study</title>
+    <title>WORD — Daily Vocabulary Drops</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anybody:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="grain-overlay"></div>
-    <div class="vignette"></div>
+    <canvas id="particleCanvas"></canvas>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
     
     <div class="container">
         <header>
-            <div class="ornament top-ornament">✦</div>
-            <h1 class="title">Word of the Day</h1>
-            <p class="subtitle">A daily expedition through the lexicon</p>
-            <div class="date-display" id="dateDisplay"></div>
-            <div class="ornament bottom-ornament">❧</div>
+            <div class="logo-badge">
+                <span class="badge-text">DAILY DROP</span>
+            </div>
+            <h1 class="title">
+                <span class="title-word">WORD</span>
+                <span class="title-accent">.</span>
+            </h1>
+            <p class="subtitle">Level up your vocabulary game</p>
+            <div class="date-pill" id="dateDisplay"></div>
         </header>
 
         <main>
             <article class="word-card" id="wordCard">
-                <div class="card-corner top-left"></div>
-                <div class="card-corner top-right"></div>
-                <div class="card-corner bottom-left"></div>
-                <div class="card-corner bottom-right"></div>
+                <div class="card-glow"></div>
                 
-                <div class="word-header">
-                    <span class="word-number">№ <span id="wordNumber">1</span></span>
+                <div class="word-hero">
+                    <div class="word-meta">
+                        <span class="word-count">#<span id="wordNumber">1</span></span>
+                        <span class="pos-tag" id="partOfSpeech"></span>
+                    </div>
                     <h2 class="word" id="word">Loading...</h2>
                     <div class="pronunciation" id="pronunciation"></div>
-                    <div class="part-of-speech">
-                        <span class="pos-badge" id="partOfSpeech"></span>
-                    </div>
                 </div>
                 
-                <div class="divider">
-                    <span class="divider-ornament">✧</span>
-                </div>
-                
-                <div class="word-content">
-                    <section class="definition-section">
-                        <h3 class="section-title">Definition</h3>
+                <div class="word-details">
+                    <section class="detail-block definition-block">
+                        <div class="block-header">
+                            <span class="block-icon">💡</span>
+                            <h3 class="block-title">MEANING</h3>
+                        </div>
                         <p class="definition" id="definition"></p>
                     </section>
 
-                    <section class="example-section">
-                        <h3 class="section-title">In Use</h3>
-                        <blockquote class="example" id="example"></blockquote>
+                    <section class="detail-block example-block">
+                        <div class="block-header">
+                            <span class="block-icon">💬</span>
+                            <h3 class="block-title">IN ACTION</h3>
+                        </div>
+                        <p class="example" id="example"></p>
                     </section>
 
-                    <section class="etymology-section">
-                        <h3 class="section-title">Etymology</h3>
+                    <section class="detail-block etymology-block">
+                        <div class="block-header">
+                            <span class="block-icon">🔮</span>
+                            <h3 class="block-title">ORIGINS</h3>
+                        </div>
                         <p class="etymology" id="etymology"></p>
                     </section>
                 </div>
             </article>
 
             <nav class="actions">
-                <button class="btn-nav btn-prev" id="prevWordBtn" title="Previous word">
-                    <span class="btn-arrow">←</span>
-                    <span class="btn-text">Previous</span>
+                <button class="btn-nav" id="prevWordBtn">
+                    <span class="btn-icon">◀</span>
+                    <span class="btn-label">PREV</span>
                 </button>
-                <button class="btn-share" id="shareBtn" title="Share this word">
-                    <span class="share-icon">⎘</span>
-                    <span class="btn-text">Share</span>
+                
+                <button class="btn-main" id="shareBtn">
+                    <span class="btn-label">SHARE THIS</span>
+                    <span class="btn-icon">⚡</span>
                 </button>
-                <button class="btn-nav btn-next" id="nextWordBtn" title="Next word">
-                    <span class="btn-text">Next</span>
-                    <span class="btn-arrow">→</span>
+                
+                <button class="btn-nav" id="nextWordBtn">
+                    <span class="btn-label">NEXT</span>
+                    <span class="btn-icon">▶</span>
                 </button>
             </nav>
         </main>
 
         <footer>
-            <p class="footer-text">Return on the morrow for another word</p>
-            <div class="footer-ornament">— ✦ —</div>
+            <p class="footer-cta">New word drops every day at midnight 🔥</p>
         </footer>
     </div>
 
