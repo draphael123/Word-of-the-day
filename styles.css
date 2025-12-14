@@ -10,25 +10,31 @@
 }
 
 :root {
-    /* Ink & Parchment Palette */
-    --ink-black: #0a0a0a;
-    --ink-deep: #121212;
-    --ink-soft: #1a1a1a;
-    --ink-muted: #2a2a2a;
+    /* Bright & Happy Color Palette */
+    --sunshine-yellow: #FFE066;
+    --coral-pink: #FF6B9D;
+    --sky-blue: #4ECDC4;
+    --lavender-purple: #A78BFA;
+    --peachy-orange: #FFB347;
+    --mint-green: #95E1D3;
+    --rose-pink: #F8B195;
+    --bright-cyan: #00D9FF;
     
-    --parchment: #f7f3e9;
-    --parchment-aged: #ebe5d5;
-    --parchment-dark: #d9d0bc;
+    --background-gradient-1: #FFE066;
+    --background-gradient-2: #FF6B9D;
+    --background-gradient-3: #4ECDC4;
+    --background-gradient-4: #A78BFA;
     
-    --amber: #d4a373;
-    --amber-light: #e9c89b;
-    --amber-glow: #f5deb3;
-    --burgundy: #722f37;
-    --burgundy-deep: #4a1c22;
+    --card-bg: #FFFFFF;
+    --card-bg-soft: #FFF9F0;
     
-    --sepia: #3d2914;
-    --sepia-light: #5c4a32;
-    --sepia-muted: #8b7355;
+    --text-primary: #2D3748;
+    --text-secondary: #4A5568;
+    --text-accent: #ED64A6;
+    
+    --accent-primary: #FF6B9D;
+    --accent-secondary: #4ECDC4;
+    --accent-tertiary: #FFE066;
     
     /* Typography */
     --font-display: 'Cormorant Garamond', Georgia, serif;
@@ -55,15 +61,26 @@ html {
 
 body {
     font-family: var(--font-body);
-    background: var(--ink-black);
-    background-image: 
-        radial-gradient(ellipse at 50% 0%, var(--ink-soft) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 100%, var(--burgundy-deep) 0%, transparent 40%),
-        radial-gradient(ellipse at 20% 80%, var(--ink-muted) 0%, transparent 50%);
+    background: linear-gradient(135deg, #FFE066 0%, #FF6B9D 25%, #4ECDC4 50%, #A78BFA 75%, #FFB347 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
     min-height: 100vh;
-    color: var(--parchment);
+    color: var(--text-primary);
     line-height: 1.7;
     overflow-x: hidden;
+    position: relative;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Film grain overlay for texture */
@@ -76,12 +93,12 @@ body {
     z-index: 1000;
 }
 
-/* Vignette effect */
+/* Vignette effect - lighter and happier */
 .vignette {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 40%, var(--ink-black) 100%);
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(255, 255, 255, 0.1) 100%);
     z-index: 999;
 }
 
@@ -109,7 +126,7 @@ header {
 
 .ornament {
     font-size: 1.5rem;
-    color: var(--amber);
+    color: var(--accent-primary);
     opacity: 0;
     animation: fadeIn 1s ease forwards;
 }
@@ -130,8 +147,8 @@ header {
     font-size: clamp(2.5rem, 8vw, 4.5rem);
     font-weight: 400;
     letter-spacing: 0.02em;
-    color: var(--parchment);
-    text-shadow: 0 0 60px rgba(212, 163, 115, 0.3);
+    color: #FFFFFF;
+    text-shadow: 0 4px 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 107, 157, 0.4);
     margin-bottom: var(--space-sm);
     opacity: 0;
     animation: revealTitle 1.2s ease forwards;
@@ -143,8 +160,9 @@ header {
     font-size: 1.15rem;
     font-style: italic;
     font-weight: 400;
-    color: var(--amber);
+    color: #FFFFFF;
     letter-spacing: 0.05em;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
     opacity: 0;
     animation: fadeIn 1s ease forwards;
     animation-delay: 0.5s;
@@ -154,7 +172,7 @@ header {
     font-family: var(--font-body);
     font-size: 0.9rem;
     font-weight: 300;
-    color: var(--parchment-dark);
+    color: rgba(255, 255, 255, 0.9);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-top: var(--space-lg);
@@ -168,15 +186,16 @@ header {
    ═══════════════════════════════════════════════════════════════ */
 
 .word-card {
-    background: var(--parchment);
-    color: var(--sepia);
+    background: var(--card-bg);
+    color: var(--text-primary);
     padding: var(--space-2xl) var(--space-xl);
     position: relative;
     margin-bottom: var(--space-xl);
     box-shadow: 
-        0 4px 20px rgba(0, 0, 0, 0.4),
-        0 20px 60px rgba(0, 0, 0, 0.3),
-        inset 0 0 100px rgba(0, 0, 0, 0.03);
+        0 10px 40px rgba(255, 107, 157, 0.2),
+        0 20px 60px rgba(78, 205, 196, 0.15),
+        0 30px 80px rgba(167, 139, 250, 0.1);
+    border-radius: 20px;
     opacity: 0;
     transform: translateY(30px);
     animation: cardReveal 0.8s ease forwards;
@@ -185,12 +204,12 @@ header {
 }
 
 .word-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(1.01);
     box-shadow: 
-        0 8px 30px rgba(0, 0, 0, 0.5),
-        0 30px 80px rgba(0, 0, 0, 0.4),
-        inset 0 0 100px rgba(0, 0, 0, 0.03),
-        0 0 100px rgba(212, 163, 115, 0.1);
+        0 15px 50px rgba(255, 107, 157, 0.3),
+        0 30px 80px rgba(78, 205, 196, 0.25),
+        0 40px 100px rgba(167, 139, 250, 0.2),
+        0 0 60px rgba(255, 224, 102, 0.3);
 }
 
 /* Decorative corners */
@@ -198,9 +217,9 @@ header {
     position: absolute;
     width: 24px;
     height: 24px;
-    border-color: var(--sepia-muted);
+    border-color: var(--accent-secondary);
     border-style: solid;
-    opacity: 0.4;
+    opacity: 0.3;
 }
 
 .card-corner.top-left {
@@ -237,7 +256,7 @@ header {
     display: block;
     font-family: var(--font-display);
     font-size: 0.85rem;
-    color: var(--sepia-muted);
+    color: var(--text-secondary);
     letter-spacing: 0.15em;
     margin-bottom: var(--space-sm);
 }
@@ -246,7 +265,10 @@ header {
     font-family: var(--font-display);
     font-size: clamp(2.5rem, 10vw, 4rem);
     font-weight: 600;
-    color: var(--burgundy);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     line-height: 1.1;
     margin-bottom: var(--space-sm);
     letter-spacing: -0.01em;
@@ -257,7 +279,7 @@ header {
     font-size: 1.1rem;
     font-style: italic;
     font-weight: 300;
-    color: var(--sepia-light);
+    color: var(--text-secondary);
     letter-spacing: 0.02em;
     margin-bottom: var(--space-md);
 }
@@ -273,10 +295,10 @@ header {
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--parchment);
-    background: var(--burgundy);
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     padding: var(--space-xs) var(--space-md);
-    border-radius: 0;
+    border-radius: 20px;
 }
 
 /* Divider */
@@ -292,8 +314,8 @@ header {
     position: absolute;
     top: 50%;
     width: calc(50% - 30px);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--sepia-muted), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-secondary), var(--accent-primary), transparent);
 }
 
 .divider::before {
@@ -305,7 +327,7 @@ header {
 }
 
 .divider-ornament {
-    color: var(--amber);
+    color: var(--accent-primary);
     font-size: 1rem;
 }
 
@@ -322,7 +344,7 @@ header {
     font-weight: 600;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--sepia-muted);
+    color: var(--text-accent);
     margin-bottom: var(--space-sm);
     position: relative;
     display: inline-block;
@@ -334,36 +356,40 @@ header {
     bottom: -4px;
     left: 0;
     width: 100%;
-    height: 1px;
-    background: var(--amber);
-    opacity: 0.5;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0.6;
 }
 
 .definition {
     font-size: 1.15rem;
     line-height: 1.9;
-    color: var(--sepia);
+    color: var(--text-primary);
 }
 
 .example {
     font-size: 1.05rem;
     font-style: italic;
     line-height: 1.8;
-    color: var(--sepia-light);
+    color: var(--text-secondary);
     padding: var(--space-lg);
     margin: 0;
     background: 
-        linear-gradient(to right, var(--amber) 3px, transparent 3px),
-        linear-gradient(to bottom, var(--parchment-aged), var(--parchment-aged));
+        linear-gradient(to right, var(--accent-primary) 4px, transparent 4px),
+        linear-gradient(to bottom, var(--card-bg-soft), var(--card-bg-soft));
     background-size: 100% 100%;
     position: relative;
+    border-radius: 10px;
 }
 
 .example::before {
     content: '"';
     font-family: var(--font-display);
     font-size: 3rem;
-    color: var(--amber);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     opacity: 0.4;
     position: absolute;
     top: 0;
@@ -374,7 +400,7 @@ header {
 .etymology {
     font-size: 0.95rem;
     line-height: 1.8;
-    color: var(--sepia-muted);
+    color: var(--text-secondary);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -405,17 +431,21 @@ button {
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-lg);
-    color: var(--parchment-dark);
+    color: var(--text-primary);
     font-size: 0.9rem;
     letter-spacing: 0.05em;
-    border: 1px solid var(--ink-muted);
-    background: var(--ink-deep);
+    border: 2px solid var(--accent-secondary);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
 }
 
 .btn-nav:hover {
-    color: var(--amber);
-    border-color: var(--amber);
-    background: var(--ink-soft);
+    color: #FFFFFF;
+    border-color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
 }
 
 .btn-arrow {
@@ -436,16 +466,19 @@ button {
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-xl);
-    color: var(--ink-black);
+    color: #FFFFFF;
     font-size: 0.9rem;
     letter-spacing: 0.05em;
-    background: var(--amber);
-    border: 1px solid var(--amber);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border: 2px solid transparent;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
 }
 
 .btn-share:hover {
-    background: var(--amber-light);
-    box-shadow: 0 0 30px rgba(212, 163, 115, 0.3);
+    background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+    transform: translateY(-2px) scale(1.05);
 }
 
 .share-icon {
@@ -468,14 +501,15 @@ footer {
     font-family: var(--font-display);
     font-style: italic;
     font-size: 1rem;
-    color: var(--parchment-dark);
+    color: rgba(255, 255, 255, 0.9);
     letter-spacing: 0.02em;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
 }
 
 .footer-ornament {
     margin-top: var(--space-md);
-    color: var(--amber);
-    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
     font-size: 0.9rem;
     letter-spacing: 0.3em;
 }
@@ -620,18 +654,19 @@ footer {
    ═══════════════════════════════════════════════════════════════ */
 
 ::selection {
-    background: var(--amber);
-    color: var(--ink-black);
+    background: var(--accent-primary);
+    color: #FFFFFF;
 }
 
 ::-moz-selection {
-    background: var(--amber);
-    color: var(--ink-black);
+    background: var(--accent-primary);
+    color: #FFFFFF;
 }
 
 button:focus-visible {
-    outline: 2px solid var(--amber);
-    outline-offset: 2px;
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 25px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
