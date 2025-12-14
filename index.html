@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WORD — Daily Vocabulary Drops</title>
+    <meta name="description" content="Expand your vocabulary with a new word every day. Learn definitions, etymology, and pronunciation.">
+    <meta name="theme-color" content="#050505">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +21,28 @@
     <div class="gradient-orb orb-1"></div>
     <div class="gradient-orb orb-2"></div>
     <div class="gradient-orb orb-3"></div>
+    
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="streak-display" id="streakDisplay" title="Daily streak">
+            <span class="streak-icon">🔥</span>
+            <span class="streak-count" id="streakCount">0</span>
+        </div>
+        <div class="top-bar-actions">
+            <button class="btn-icon-only" id="filterBtn" title="Filter by category">
+                <span>⚙️</span>
+            </button>
+            <button class="btn-icon-only" id="favoritesBtn" title="View favorites">
+                <span>❤️</span>
+            </button>
+            <button class="btn-icon-only" id="quizBtn" title="Quiz mode">
+                <span>🧠</span>
+            </button>
+            <button class="btn-icon-only" id="helpBtn" title="Keyboard shortcuts">
+                <span>?</span>
+            </button>
+        </div>
+    </div>
     
     <div class="container">
         <header>
@@ -29,8 +58,14 @@
         </header>
 
         <main>
+            <!-- Main Word Card -->
             <article class="word-card" id="wordCard">
                 <div class="card-glow"></div>
+                
+                <!-- Favorite Button -->
+                <button class="btn-favorite" id="favoriteBtn" title="Add to favorites">
+                    <span class="heart-icon">♡</span>
+                </button>
                 
                 <div class="word-hero">
                     <div class="word-meta">
@@ -73,14 +108,77 @@
                 </div>
             </article>
 
+            <!-- Quiz Card (hidden by default) -->
+            <article class="word-card quiz-card" id="quizCard" style="display: none;">
+                <div class="card-glow"></div>
+                
+                <div class="quiz-header">
+                    <span class="quiz-score">Score: <span id="quizScore">0</span>/<span id="quizTotal">0</span></span>
+                    <button class="btn-close-quiz" id="closeQuizBtn">✕</button>
+                </div>
+                
+                <div class="quiz-content">
+                    <h3 class="quiz-prompt">What word matches this definition?</h3>
+                    <p class="quiz-definition" id="quizDefinition"></p>
+                    
+                    <div class="quiz-options" id="quizOptions">
+                        <!-- Options inserted by JS -->
+                    </div>
+                    
+                    <div class="quiz-feedback" id="quizFeedback"></div>
+                    
+                    <button class="btn-main btn-next-quiz" id="nextQuizBtn" style="display: none;">
+                        Next Question →
+                    </button>
+                </div>
+            </article>
+
+            <!-- Favorites Panel (hidden by default) -->
+            <div class="favorites-panel" id="favoritesPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">❤️ Your Favorites</h2>
+                    <button class="btn-close-panel" id="closeFavoritesBtn">✕</button>
+                </div>
+                <div class="favorites-list" id="favoritesList">
+                    <!-- Favorites inserted by JS -->
+                </div>
+            </div>
+
+            <!-- Filter Panel (hidden by default) -->
+            <div class="filter-panel" id="filterPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">⚙️ Filter Words</h2>
+                    <button class="btn-close-panel" id="closeFilterBtn">✕</button>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-group">
+                        <h4 class="filter-label">Part of Speech</h4>
+                        <div class="filter-buttons" id="posFilters">
+                            <button class="filter-chip active" data-filter="all">All</button>
+                            <button class="filter-chip" data-filter="noun">Noun</button>
+                            <button class="filter-chip" data-filter="verb">Verb</button>
+                            <button class="filter-chip" data-filter="adjective">Adjective</button>
+                            <button class="filter-chip" data-filter="adverb">Adverb</button>
+                        </div>
+                    </div>
+                    <div class="filter-stats" id="filterStats">
+                        Showing all 129 words
+                    </div>
+                </div>
+            </div>
+
             <nav class="actions">
                 <button class="btn-nav" id="prevWordBtn">
                     <span class="btn-icon">◀</span>
                     <span class="btn-label">PREV</span>
                 </button>
                 
+                <button class="btn-accent" id="randomBtn" title="Random word">
+                    <span class="btn-icon">🎲</span>
+                </button>
+                
                 <button class="btn-main" id="shareBtn">
-                    <span class="btn-label">SHARE THIS</span>
+                    <span class="btn-label">SHARE</span>
                     <span class="btn-icon">⚡</span>
                 </button>
                 
@@ -93,7 +191,55 @@
 
         <footer>
             <p class="footer-cta">New word drops every day at midnight 🔥</p>
+            <p class="footer-hint">Use ← → arrow keys to navigate</p>
         </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⌨️ Keyboard Shortcuts</h2>
+                <button class="btn-close-modal" id="closeHelpBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcut-row">
+                    <span class="shortcut-key">←</span>
+                    <span class="shortcut-desc">Previous word</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">→</span>
+                    <span class="shortcut-desc">Next word</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">R</span>
+                    <span class="shortcut-desc">Random word</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">S</span>
+                    <span class="shortcut-desc">Speak word</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">F</span>
+                    <span class="shortcut-desc">Toggle favorite</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">Q</span>
+                    <span class="shortcut-desc">Start quiz</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">?</span>
+                    <span class="shortcut-desc">Show this help</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <label class="toggle-row">
+                    <span>Reduce motion</span>
+                    <input type="checkbox" id="reduceMotionToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
     </div>
 
     <script src="words.js"></script>
