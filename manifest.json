@@ -1,0 +1,13 @@
+{
+    "name": "WORD — Daily Vocabulary Drops",
+    "short_name": "WORD",
+    "description": "Expand your vocabulary with a new word every day",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#ff6b35",
+    "orientation": "portrait-primary",
+    "categories": ["education", "lifestyle"],
+    "lang": "en",
+    "dir": "ltr"
+}
