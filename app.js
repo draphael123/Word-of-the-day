@@ -198,6 +198,68 @@ function updateDateDisplay(date) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// SPEECH SYNTHESIS (Text-to-Speech)
+// ═══════════════════════════════════════════════════════════════
+
+function speakWord(wordData) {
+    // Check if speech synthesis is supported
+    if (!('speechSynthesis' in window)) {
+        showNotification('Speech not supported in this browser 😕');
+        return;
+    }
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const speakBtn = document.getElementById('speakBtn');
+    
+    // Create the utterance
+    const utterance = new SpeechSynthesisUtterance(wordData.word);
+    utterance.rate = 0.8;  // Slightly slower for clarity
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    // Try to find a good English voice
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(voice => 
+        voice.lang.startsWith('en') && voice.name.includes('Google')
+    ) || voices.find(voice => 
+        voice.lang.startsWith('en-US')
+    ) || voices.find(voice => 
+        voice.lang.startsWith('en')
+    );
+    
+    if (englishVoice) {
+        utterance.voice = englishVoice;
+    }
+    
+    // Add speaking animation
+    utterance.onstart = () => {
+        speakBtn.classList.add('speaking');
+    };
+    
+    utterance.onend = () => {
+        speakBtn.classList.remove('speaking');
+    };
+    
+    utterance.onerror = () => {
+        speakBtn.classList.remove('speaking');
+        showNotification('Could not pronounce word 😕');
+    };
+    
+    // Speak!
+    window.speechSynthesis.speak(utterance);
+}
+
+// Load voices (they load asynchronously in some browsers)
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════
 // SHARE FUNCTIONALITY
 // ═══════════════════════════════════════════════════════════════
 
@@ -324,6 +386,13 @@ function initializeApp() {
         if (particles) particles.burst(e.clientX, e.clientY);
         const currentWord = getWordForDay(currentDayIndex);
         shareWord(currentWord);
+    });
+    
+    // Speak button
+    document.getElementById('speakBtn').addEventListener('click', (e) => {
+        if (particles) particles.burst(e.clientX, e.clientY);
+        const currentWord = getWordForDay(currentDayIndex);
+        speakWord(currentWord);
     });
     
     // Keyboard navigation
