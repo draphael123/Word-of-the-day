@@ -1509,6 +1509,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize new features
     SwipeManager.init();
+    LanguageManager.init();
     
     // Calendar
     document.getElementById('calendarBtn')?.addEventListener('click', () => {
