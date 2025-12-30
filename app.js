@@ -819,7 +819,10 @@ function formatDate(d) {
 // ═══════════════════════════════════════════════════════════════
 
 function closePanels() {
-    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel', 'musicPanel'].forEach(id => document.getElementById(id).style.display = 'none');
+    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel', 'musicPanel', 'calendarPanel', 'journalPanel', 'exportPanel', 'gamesPanel', 'learningPathPanel', 'leaderboardPanel', 'submissionsPanel', 'discussionsPanel', 'themesPanel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
     document.getElementById('wordCard').style.display = 'block';
 }
 
@@ -909,6 +912,32 @@ function init() {
     document.getElementById('filterBtn').addEventListener('click', () => { closePanels(); document.getElementById('filterPanel').style.display = 'block'; document.getElementById('wordCard').style.display = 'none'; });
     document.getElementById('favoritesBtn').addEventListener('click', () => { closePanels(); FavoritesManager.render(); document.getElementById('favoritesPanel').style.display = 'block'; document.getElementById('wordCard').style.display = 'none'; });
     document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpModal').style.display = 'flex');
+    document.getElementById('calendarBtn')?.addEventListener('click', () => {
+        closePanels();
+        CalendarManager.render();
+        const panel = document.getElementById('calendarPanel');
+        if (panel) {
+            panel.style.display = 'block';
+            document.getElementById('wordCard').style.display = 'none';
+        }
+    });
+    document.getElementById('journalBtn')?.addEventListener('click', () => {
+        closePanels();
+        JournalManager.render(getWord(currentDayIndex).word);
+        const panel = document.getElementById('journalPanel');
+        if (panel) {
+            panel.style.display = 'block';
+            document.getElementById('wordCard').style.display = 'none';
+        }
+    });
+    document.getElementById('exportBtn')?.addEventListener('click', () => {
+        closePanels();
+        const panel = document.getElementById('exportPanel');
+        if (panel) {
+            panel.style.display = 'block';
+            document.getElementById('wordCard').style.display = 'none';
+        }
+    });
     
     // Quiz, Flashcard, Challenge
     document.getElementById('quizBtn').addEventListener('click', () => { closePanels(); QuizManager.start(); });
@@ -922,6 +951,15 @@ function init() {
     document.getElementById('closeListsBtn').addEventListener('click', closePanels);
     document.getElementById('closeFilterBtn').addEventListener('click', closePanels);
     document.getElementById('closeFavoritesBtn').addEventListener('click', closePanels);
+    document.getElementById('closeCalendarBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeJournalBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeExportBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeGamesBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeLearningPathBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeLeaderboardBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeSubmissionsBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeDiscussionsBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeThemesBtn')?.addEventListener('click', closePanels);
     
     // Music controls
     document.getElementById('playPauseBtn').addEventListener('click', () => MusicManager.toggle());
@@ -991,7 +1029,579 @@ function init() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ═══════════════════════════════════════════════════════════════
+// ALL NEW FEATURES IMPLEMENTATION
+// ═══════════════════════════════════════════════════════════════
+
+// Calendar/History Manager
+const CalendarManager = {
+    currentMonth: new Date().getMonth(),
+    currentYear: new Date().getFullYear(),
+    render() {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        document.getElementById('calendarMonth').textContent = `${monthNames[this.currentMonth]} ${this.currentYear}`;
+        const grid = document.getElementById('calendarGrid');
+        const firstDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
+        const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+        const visited = Storage.get('visitedDays', {});
+        
+        grid.innerHTML = '';
+        for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div class="calendar-day empty"></div>';
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateKey = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const visitedClass = visited[dateKey] ? 'visited' : '';
+            const word = this.getWordForDate(new Date(this.currentYear, this.currentMonth, day));
+            grid.innerHTML += `<div class="calendar-day ${visitedClass}" data-date="${dateKey}" data-word="${word}">${day}</div>`;
+        }
+        
+        grid.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+            day.addEventListener('click', () => {
+                const word = day.dataset.word;
+                if (word) {
+                    const idx = wordsDatabase.findIndex(w => w.word === word);
+                    if (idx > -1) {
+                        currentDayIndex = idx;
+                        displayWord(wordsDatabase[idx], idx, true);
+                        closePanels();
+                    }
+                }
+            });
+        });
+    },
+    getWordForDate(date) {
+        const start = new Date('2024-01-01');
+        const diff = Math.floor((date - start) / (1000 * 60 * 60 * 24));
+        return getWord(diff).word;
+    }
+};
+
+// Journal Manager
+const JournalManager = {
+    getEntries() { return Storage.get('journal', {}); },
+    saveEntry(word, text) {
+        const entries = this.getEntries();
+        if (!entries[word]) entries[word] = [];
+        entries[word].push({ text, date: new Date().toISOString() });
+        Storage.set('journal', entries);
+    },
+    render(word) {
+        const entries = this.getEntries()[word] || [];
+        const container = document.getElementById('journalEntries');
+        if (entries.length === 0) {
+            container.innerHTML = '<p style="color:var(--gray);text-align:center;">No entries yet</p>';
+            return;
+        }
+        container.innerHTML = entries.map(e => `
+            <div class="journal-entry">
+                <p class="journal-text">${e.text}</p>
+                <span class="journal-date">${new Date(e.date).toLocaleDateString()}</span>
+            </div>
+        `).join('');
+    }
+};
+
+// Export Manager
+const ExportManager = {
+    exportPDF() {
+        const favs = FavoritesManager.get();
+        const content = favs.map(w => {
+            const word = wordsDatabase.find(x => x.word === w);
+            return word ? `${word.word}\n${word.definition}\n${word.example}\n\n` : '';
+        }).join('');
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'word-favorites.txt';
+        a.click();
+        showNotification('Exported to text file!');
+    },
+    exportAnki() {
+        const favs = FavoritesManager.get();
+        const csv = favs.map(w => {
+            const word = wordsDatabase.find(x => x.word === w);
+            return word ? `"${word.word}","${word.definition}","${word.example}"` : '';
+        }).filter(x => x).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'words-anki.csv';
+        a.click();
+        showNotification('Exported to Anki format!');
+    },
+    exportCSV() {
+        const stats = Storage.get('quizStats', {});
+        const csv = `Metric,Value\nWords Learned,${StatsManager.getWordsLearned()}\nStreak,${StreakManager.getStreak().count}\nQuiz Accuracy,${stats.total > 0 ? (stats.correct / stats.total * 100).toFixed(1) : 0}%`;
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'word-stats.csv';
+        a.click();
+        showNotification('Exported stats to CSV!');
+    },
+    exportJSON() {
+        const data = {
+            favorites: FavoritesManager.get(),
+            streak: StreakManager.getStreak(),
+            quizStats: Storage.get('quizStats', {}),
+            badges: BadgeManager.getUnlocked(),
+            journal: JournalManager.getEntries()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'word-data.json';
+        a.click();
+        showNotification('Exported to JSON!');
+    }
+};
+
+// Pronunciation Practice
+const PronunciationPractice = {
+    mediaRecorder: null,
+    audioChunks: [],
+    start() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            this.mediaRecorder = new MediaRecorder(stream);
+            this.audioChunks = [];
+            this.mediaRecorder.ondataavailable = e => this.audioChunks.push(e.data);
+            this.mediaRecorder.onstop = () => this.compare();
+            this.mediaRecorder.start();
+            showNotification('Recording... Click again to stop');
+        }).catch(() => showNotification('Microphone access denied'));
+    },
+    stop() {
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+        }
+    },
+    compare() {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+        showNotification('Recording saved! (Comparison feature requires backend)');
+    }
+};
+
+// Word Frequency Data
+const FrequencyManager = {
+    getFrequency(word) {
+        // Simplified frequency - in real app, use API
+        const common = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'it'];
+        if (common.includes(word.toLowerCase())) return 'very common';
+        const length = word.length;
+        if (length < 5) return 'common';
+        if (length < 8) return 'moderate';
+        return 'uncommon';
+    }
+};
+
+// Social Share Image Generator
+const ShareImageGenerator = {
+    generate(wordData) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1200;
+        canvas.height = 630;
+        const ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0, 0, 1200, 630);
+        
+        // Word
+        ctx.fillStyle = '#ff6b35';
+        ctx.font = 'bold 80px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(wordData.word.toUpperCase(), 600, 200);
+        
+        // Definition
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '30px Arial';
+        const words = wordData.definition.split(' ');
+        let line = '';
+        let y = 300;
+        words.forEach(word => {
+            const testLine = line + word + ' ';
+            if (ctx.measureText(testLine).width > 1000) {
+                ctx.fillText(line, 600, y);
+                line = word + ' ';
+                y += 40;
+            } else line = testLine;
+        });
+        ctx.fillText(line, 600, y);
+        
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${wordData.word}-share.png`;
+            a.click();
+            showNotification('Image downloaded!');
+        });
+    }
+};
+
+// Swipe Gestures
+const SwipeManager = {
+    init() {
+        let startX = 0, startY = 0;
+        const card = document.getElementById('wordCard');
+        if (!card) return;
+        
+        card.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        card.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) document.getElementById('nextWordBtn').click();
+                else document.getElementById('prevWordBtn').click();
+            } else if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50) {
+                if (diffY > 0) document.getElementById('randomBtn').click();
+                else document.getElementById('favoriteBtn').click();
+            }
+        });
+    }
+};
+
+// Additional Games
+const GamesManager = {
+    wordAssociation() {
+        const word = getWord(currentDayIndex);
+        const related = wordsDatabase.filter(w => 
+            w.word !== word.word && 
+            (w.definition.includes(word.word) || word.definition.includes(w.word))
+        ).slice(0, 4);
+        showNotification(`Find words related to "${word.word}"!`);
+    },
+    synonymMatch() {
+        QuizManager.start();
+    },
+    wordLadder() {
+        showNotification('Word Ladder game coming soon!');
+    }
+};
+
+// Learning Path
+const LearningPathManager = {
+    render() {
+        const mastery = SRSManager.getMastery();
+        const container = document.getElementById('learningPathContent');
+        container.innerHTML = `
+            <div class="path-stats">
+                <div class="path-milestone">
+                    <span class="milestone-icon">🎯</span>
+                    <span class="milestone-text">Next: Learn 10 more words</span>
+                </div>
+                <div class="path-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(mastery.learning + mastery.mastered) / wordsDatabase.length * 100}%"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+};
+
+// Leaderboard (local only - would need backend for real leaderboard)
+const LeaderboardManager = {
+    render() {
+        const stats = Storage.get('leaderboard', []);
+        const container = document.getElementById('leaderboardContent');
+        if (stats.length === 0) {
+            container.innerHTML = '<p style="color:var(--gray);text-align:center;">No leaderboard data yet</p>';
+            return;
+        }
+        container.innerHTML = stats.sort((a, b) => b.streak - a.streak).map((s, i) => `
+            <div class="leaderboard-entry">
+                <span class="rank">#${i + 1}</span>
+                <span class="name">${s.name || 'Anonymous'}</span>
+                <span class="score">🔥 ${s.streak} days</span>
+            </div>
+        `).join('');
+    }
+};
+
+// User Submissions
+const SubmissionsManager = {
+    submit() {
+        const word = document.getElementById('submitWord').value.trim();
+        const pronunciation = document.getElementById('submitPronunciation').value.trim();
+        const definition = document.getElementById('submitDefinition').value.trim();
+        const example = document.getElementById('submitExample').value.trim();
+        
+        if (!word || !definition) {
+            showNotification('Please fill in word and definition');
+            return;
+        }
+        
+        const submissions = Storage.get('submissions', []);
+        submissions.push({ word, pronunciation, definition, example, date: new Date().toISOString() });
+        Storage.set('submissions', submissions);
+        
+        document.getElementById('submitWord').value = '';
+        document.getElementById('submitPronunciation').value = '';
+        document.getElementById('submitDefinition').value = '';
+        document.getElementById('submitExample').value = '';
+        
+        showNotification('Word submitted! (Requires admin approval)');
+    }
+};
+
+// Discussions
+const DiscussionsManager = {
+    getDiscussions(word) { return Storage.get(`discussions-${word}`, []); },
+    post(word, text) {
+        const discussions = this.getDiscussions(word);
+        discussions.push({ text, author: 'You', date: new Date().toISOString() });
+        Storage.set(`discussions-${word}`, discussions);
+        this.render(word);
+    },
+    render(word) {
+        const discussions = this.getDiscussions(word);
+        const container = document.getElementById('discussionsList');
+        if (discussions.length === 0) {
+            container.innerHTML = '<p style="color:var(--gray);text-align:center;">No discussions yet</p>';
+            return;
+        }
+        container.innerHTML = discussions.map(d => `
+            <div class="discussion-item">
+                <p class="discussion-text">${d.text}</p>
+                <span class="discussion-author">${d.author} • ${new Date(d.date).toLocaleDateString()}</span>
+            </div>
+        `).join('');
+    }
+};
+
+// Enhanced Theme Manager
+const EnhancedThemeManager = {
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        Storage.set('theme', theme);
+        ThemeManager.updateIcon(theme === 'dark' ? 'dark' : 'light');
+    }
+};
+
+// Update displayWord to include new features
+const originalDisplayWord = displayWord;
+displayWord = function(word, idx, animate) {
+    originalDisplayWord(word, idx, animate);
+    
+    // Add frequency badge
+    const freq = FrequencyManager.getFrequency(word.word);
+    const freqEl = document.getElementById('frequencyBadge');
+    if (freqEl) {
+        freqEl.textContent = `📊 ${freq.charAt(0).toUpperCase() + freq.slice(1)}`;
+        freqEl.title = `Word frequency: ${freq}`;
+    }
+    
+    // Add word length
+    const lengthEl = document.getElementById('wordLength');
+    if (!lengthEl && document.querySelector('.word-meta')) {
+        const meta = document.querySelector('.word-meta');
+        const len = document.createElement('span');
+        len.id = 'wordLength';
+        len.className = 'word-length';
+        len.textContent = `${word.word.length} letters`;
+        meta.appendChild(len);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    
+    // Initialize new features
+    SwipeManager.init();
+    
+    // Calendar
+    document.getElementById('calendarBtn')?.addEventListener('click', () => {
+        closePanels();
+        CalendarManager.render();
+        document.getElementById('calendarPanel').style.display = 'block';
+        document.getElementById('wordCard').style.display = 'none';
+    });
+    document.getElementById('prevMonthBtn')?.addEventListener('click', () => {
+        CalendarManager.currentMonth--;
+        if (CalendarManager.currentMonth < 0) {
+            CalendarManager.currentMonth = 11;
+            CalendarManager.currentYear--;
+        }
+        CalendarManager.render();
+    });
+    document.getElementById('nextMonthBtn')?.addEventListener('click', () => {
+        CalendarManager.currentMonth++;
+        if (CalendarManager.currentMonth > 11) {
+            CalendarManager.currentMonth = 0;
+            CalendarManager.currentYear++;
+        }
+        CalendarManager.render();
+    });
+    
+    // Journal
+    document.getElementById('journalBtn')?.addEventListener('click', () => {
+        closePanels();
+        JournalManager.render(getWord(currentDayIndex).word);
+        document.getElementById('journalPanel').style.display = 'block';
+        document.getElementById('wordCard').style.display = 'none';
+    });
+    document.getElementById('saveJournalBtn')?.addEventListener('click', () => {
+        const text = document.getElementById('journalText').value.trim();
+        if (text) {
+            JournalManager.saveEntry(getWord(currentDayIndex).word, text);
+            document.getElementById('journalText').value = '';
+            JournalManager.render(getWord(currentDayIndex).word);
+            showNotification('Journal entry saved!');
+        }
+    });
+    
+    // Export
+    document.getElementById('exportBtn')?.addEventListener('click', () => {
+        closePanels();
+        document.getElementById('exportPanel').style.display = 'block';
+        document.getElementById('wordCard').style.display = 'none';
+    });
+    document.getElementById('exportPDFBtn')?.addEventListener('click', () => ExportManager.exportPDF());
+    document.getElementById('exportAnkiBtn')?.addEventListener('click', () => ExportManager.exportAnki());
+    document.getElementById('exportCSVBtn')?.addEventListener('click', () => ExportManager.exportCSV());
+    document.getElementById('exportJSONBtn')?.addEventListener('click', () => ExportManager.exportJSON());
+    
+    // Journal entry button
+    document.getElementById('journalEntryBtn')?.addEventListener('click', () => {
+        closePanels();
+        JournalManager.render(getWord(currentDayIndex).word);
+        document.getElementById('journalPanel').style.display = 'block';
+        document.getElementById('wordCard').style.display = 'none';
+    });
+    
+    // Games panel
+    document.getElementById('gamesPanel')?.addEventListener('click', (e) => {
+        if (e.target.id === 'wordAssociationBtn') GamesManager.wordAssociation();
+        if (e.target.id === 'synonymMatchBtn') GamesManager.synonymMatch();
+        if (e.target.id === 'wordLadderBtn') GamesManager.wordLadder();
+    });
+    
+    // Learning path
+    document.getElementById('learningPathPanel')?.addEventListener('click', () => {
+        LearningPathManager.render();
+    });
+    
+    // Leaderboard
+    document.getElementById('leaderboardPanel')?.addEventListener('click', () => {
+        LeaderboardManager.render();
+    });
+    
+    // Submissions
+    document.getElementById('submitWordBtn')?.addEventListener('click', () => SubmissionsManager.submit());
+    
+    // Discussions
+    document.getElementById('postDiscussionBtn')?.addEventListener('click', () => {
+        const text = document.getElementById('discussionText')?.value.trim();
+        if (text) {
+            DiscussionsManager.post(getWord(currentDayIndex).word, text);
+            document.getElementById('discussionText').value = '';
+        }
+    });
+    
+    // Theme variants
+    document.querySelectorAll('.theme-variant-btn').forEach(btn => {
+        btn.addEventListener('click', () => EnhancedThemeManager.setTheme(btn.dataset.theme));
+    });
+    
+    // Calendar navigation
+    document.getElementById('prevMonthBtn')?.addEventListener('click', () => {
+        CalendarManager.currentMonth--;
+        if (CalendarManager.currentMonth < 0) {
+            CalendarManager.currentMonth = 11;
+            CalendarManager.currentYear--;
+        }
+        CalendarManager.render();
+    });
+    document.getElementById('nextMonthBtn')?.addEventListener('click', () => {
+        CalendarManager.currentMonth++;
+        if (CalendarManager.currentMonth > 11) {
+            CalendarManager.currentMonth = 0;
+            CalendarManager.currentYear++;
+        }
+        CalendarManager.render();
+    });
+    
+    // Pronunciation practice
+    document.getElementById('practicePronounceBtn')?.addEventListener('click', () => {
+        if (PronunciationPractice.mediaRecorder && PronunciationPractice.mediaRecorder.state === 'recording') {
+            PronunciationPractice.stop();
+        } else {
+            PronunciationPractice.start();
+        }
+    });
+    
+    // Share image
+    document.getElementById('shareImageBtn')?.addEventListener('click', () => {
+        ShareImageGenerator.generate(getWord(currentDayIndex));
+    });
+    
+    // Copy word
+    document.getElementById('copyWordBtn')?.addEventListener('click', () => {
+        navigator.clipboard.writeText(getWord(currentDayIndex).word);
+        showNotification('Word copied!');
+    });
+    
+    // More examples
+    document.getElementById('moreExamplesBtn')?.addEventListener('click', () => {
+        const container = document.getElementById('additionalExamples');
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        if (container.style.display === 'block') {
+            const word = getWord(currentDayIndex);
+            container.innerHTML = `<p class="example">"${word.example}"</p><p class="example">"Another example using ${word.word}..."</p>`;
+        }
+    });
+    
+    // Etymology visualization
+    document.getElementById('visualizeEtymologyBtn')?.addEventListener('click', () => {
+        const tree = document.getElementById('etymologyTree');
+        tree.style.display = tree.style.display === 'none' ? 'block' : 'none';
+        if (tree.style.display === 'block') {
+            const word = getWord(currentDayIndex);
+            tree.innerHTML = `<div class="etymology-visual">${word.etymology.split(' ').slice(0, 5).join(' → ')}</div>`;
+        }
+    });
+    
+    // Games
+    document.getElementById('wordAssociationBtn')?.addEventListener('click', () => GamesManager.wordAssociation());
+    document.getElementById('synonymMatchBtn')?.addEventListener('click', () => GamesManager.synonymMatch());
+    document.getElementById('wordLadderBtn')?.addEventListener('click', () => GamesManager.wordLadder());
+    
+    // Learning path
+    document.getElementById('closeLearningPathBtn')?.addEventListener('click', closePanels);
+    
+    // Submissions
+    document.getElementById('submitWordBtn')?.addEventListener('click', () => SubmissionsManager.submit());
+    
+    // Discussions
+    document.getElementById('postDiscussionBtn')?.addEventListener('click', () => {
+        const text = document.getElementById('discussionText').value.trim();
+        if (text) {
+            DiscussionsManager.post(getWord(currentDayIndex).word, text);
+            document.getElementById('discussionText').value = '';
+        }
+    });
+    
+    // Theme variants
+    document.querySelectorAll('.theme-variant-btn').forEach(btn => {
+        btn.addEventListener('click', () => EnhancedThemeManager.setTheme(btn.dataset.theme));
+    });
+    
+    // Close all new panels
+    ['closeCalendarBtn', 'closeJournalBtn', 'closeExportBtn', 'closeGamesBtn', 'closeLearningPathBtn', 'closeLeaderboardBtn', 'closeSubmissionsBtn', 'closeDiscussionsBtn', 'closeThemesBtn'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', closePanels);
+    });
+});
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

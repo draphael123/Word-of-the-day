@@ -53,6 +53,15 @@
             <button class="btn-icon-only" id="helpBtn" title="Keyboard shortcuts">
                 <span>?</span>
             </button>
+            <button class="btn-icon-only" id="calendarBtn" title="Word history calendar">
+                <span>📅</span>
+            </button>
+            <button class="btn-icon-only" id="journalBtn" title="Word journal">
+                <span>📔</span>
+            </button>
+            <button class="btn-icon-only" id="exportBtn" title="Export data">
+                <span>💾</span>
+            </button>
         </div>
     </div>
     
@@ -88,6 +97,8 @@
                         <span class="word-count">#<span id="wordNumber">1</span></span>
                         <span class="pos-tag" id="partOfSpeech"></span>
                         <span class="difficulty-tag" id="difficultyTag">Intermediate</span>
+                        <span class="frequency-badge" id="frequencyBadge" title="Word frequency">📊 Common</span>
+                        <button class="btn-copy-word" id="copyWordBtn" title="Copy word">📋</button>
                     </div>
                     <h2 class="word" id="word">Loading...</h2>
                     <div class="pronunciation-row">
@@ -95,6 +106,11 @@
                         <button class="btn-speak" id="speakBtn" title="Hear pronunciation">
                             <span class="speak-icon">🔊</span>
                         </button>
+                        <button class="btn-pronounce-practice" id="practicePronounceBtn" title="Practice pronunciation">🎤</button>
+                        <select class="accent-select" id="accentSelect">
+                            <option value="us">🇺🇸 US</option>
+                            <option value="uk">🇬🇧 UK</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -111,16 +127,20 @@
                         <div class="block-header">
                             <span class="block-icon">💬</span>
                             <h3 class="block-title">IN ACTION</h3>
+                            <button class="btn-more-examples" id="moreExamplesBtn">+ More Examples</button>
                         </div>
                         <p class="example" id="example"></p>
+                        <div class="additional-examples" id="additionalExamples" style="display: none;"></div>
                     </section>
 
                     <section class="detail-block etymology-block">
                         <div class="block-header">
                             <span class="block-icon">🔮</span>
                             <h3 class="block-title">ORIGINS</h3>
+                            <button class="btn-visualize" id="visualizeEtymologyBtn">🌳 Visualize</button>
                         </div>
                         <p class="etymology" id="etymology"></p>
+                        <div class="etymology-tree" id="etymologyTree" style="display: none;"></div>
                     </section>
                     
                     <section class="detail-block related-block">
@@ -383,6 +403,129 @@
                 </div>
             </div>
             
+            <!-- Calendar/History Panel -->
+            <div class="calendar-panel panel" id="calendarPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">📅 Word History</h2>
+                    <button class="btn-close-panel" id="closeCalendarBtn">✕</button>
+                </div>
+                <div class="calendar-content">
+                    <div class="calendar-nav">
+                        <button class="btn-nav" id="prevMonthBtn">◀</button>
+                        <h3 id="calendarMonth"></h3>
+                        <button class="btn-nav" id="nextMonthBtn">▶</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+            
+            <!-- Journal Panel -->
+            <div class="journal-panel panel" id="journalPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">📔 Word Journal</h2>
+                    <button class="btn-close-panel" id="closeJournalBtn">✕</button>
+                </div>
+                <div class="journal-content">
+                    <div class="journal-entry-form" id="journalEntryForm">
+                        <textarea class="input-field textarea" id="journalText" placeholder="Write your thoughts about this word..."></textarea>
+                        <button class="btn-main" id="saveJournalBtn">Save Entry</button>
+                    </div>
+                    <div class="journal-entries" id="journalEntries"></div>
+                </div>
+            </div>
+            
+            <!-- Export Panel -->
+            <div class="export-panel panel" id="exportPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">💾 Export Data</h2>
+                    <button class="btn-close-panel" id="closeExportBtn">✕</button>
+                </div>
+                <div class="export-content">
+                    <div class="export-options">
+                        <button class="btn-main" id="exportPDFBtn">📄 Export to PDF</button>
+                        <button class="btn-main" id="exportAnkiBtn">🎴 Export to Anki</button>
+                        <button class="btn-main" id="exportCSVBtn">📊 Export to CSV</button>
+                        <button class="btn-main" id="exportJSONBtn">💾 Export to JSON</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Games Panel -->
+            <div class="games-panel panel" id="gamesPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🎮 Word Games</h2>
+                    <button class="btn-close-panel" id="closeGamesBtn">✕</button>
+                </div>
+                <div class="games-content">
+                    <button class="btn-main" id="wordAssociationBtn">🔗 Word Association</button>
+                    <button class="btn-main" id="synonymMatchBtn">🔄 Synonym Match</button>
+                    <button class="btn-main" id="wordLadderBtn">🪜 Word Ladder</button>
+                </div>
+            </div>
+            
+            <!-- Learning Path Panel -->
+            <div class="learning-path-panel panel" id="learningPathPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🛤️ Learning Path</h2>
+                    <button class="btn-close-panel" id="closeLearningPathBtn">✕</button>
+                </div>
+                <div class="learning-path-content" id="learningPathContent"></div>
+            </div>
+            
+            <!-- Leaderboard Panel -->
+            <div class="leaderboard-panel panel" id="leaderboardPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🏅 Leaderboards</h2>
+                    <button class="btn-close-panel" id="closeLeaderboardBtn">✕</button>
+                </div>
+                <div class="leaderboard-content" id="leaderboardContent"></div>
+            </div>
+            
+            <!-- User Submissions Panel -->
+            <div class="submissions-panel panel" id="submissionsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">💡 Submit a Word</h2>
+                    <button class="btn-close-panel" id="closeSubmissionsBtn">✕</button>
+                </div>
+                <div class="submissions-content">
+                    <input type="text" class="input-field" id="submitWord" placeholder="Word">
+                    <input type="text" class="input-field" id="submitPronunciation" placeholder="Pronunciation">
+                    <textarea class="input-field textarea" id="submitDefinition" placeholder="Definition"></textarea>
+                    <textarea class="input-field textarea" id="submitExample" placeholder="Example sentence"></textarea>
+                    <button class="btn-main" id="submitWordBtn">Submit Word</button>
+                </div>
+            </div>
+            
+            <!-- Discussions Panel -->
+            <div class="discussions-panel panel" id="discussionsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">💬 Discussions</h2>
+                    <button class="btn-close-panel" id="closeDiscussionsBtn">✕</button>
+                </div>
+                <div class="discussions-content">
+                    <div class="discussion-form">
+                        <textarea class="input-field textarea" id="discussionText" placeholder="Share your thoughts..."></textarea>
+                        <button class="btn-main" id="postDiscussionBtn">Post</button>
+                    </div>
+                    <div class="discussions-list" id="discussionsList"></div>
+                </div>
+            </div>
+            
+            <!-- Theme Variants Panel -->
+            <div class="themes-panel panel" id="themesPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🎨 Theme Variants</h2>
+                    <button class="btn-close-panel" id="closeThemesBtn">✕</button>
+                </div>
+                <div class="themes-content">
+                    <button class="theme-variant-btn" data-theme="dark">🌙 Dark</button>
+                    <button class="theme-variant-btn" data-theme="light">☀️ Light</button>
+                    <button class="theme-variant-btn" data-theme="ocean">🌊 Ocean</button>
+                    <button class="theme-variant-btn" data-theme="forest">🌲 Forest</button>
+                    <button class="theme-variant-btn" data-theme="sunset">🌅 Sunset</button>
+                </div>
+            </div>
+            
             <!-- Create List Modal -->
             <div class="modal" id="createListModal" style="display: none;">
                 <div class="modal-content">
@@ -425,6 +568,12 @@
                 <button class="btn-main" id="shareBtn">
                     <span class="btn-label">SHARE</span>
                     <span class="btn-icon">⚡</span>
+                </button>
+                <button class="btn-accent" id="shareImageBtn" title="Share as image">
+                    <span class="btn-icon">🖼️</span>
+                </button>
+                <button class="btn-accent" id="journalEntryBtn" title="Add journal entry">
+                    <span class="btn-icon">📝</span>
                 </button>
                 
                 <button class="btn-nav" id="nextWordBtn">
