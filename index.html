@@ -29,6 +29,9 @@
             <span class="streak-count" id="streakCount">0</span>
         </div>
         <div class="top-bar-actions">
+            <button class="btn-icon-only" id="musicBtn" title="Relaxing music">
+                <span class="music-icon">🎵</span>
+            </button>
             <button class="btn-icon-only" id="themeBtn" title="Toggle theme">
                 <span class="theme-icon">☀️</span>
             </button>
@@ -63,6 +66,10 @@
                 <span class="title-accent">.</span>
             </h1>
             <p class="subtitle">Level up your vocabulary game</p>
+            <div class="motivational-quote" id="motivationalQuote">
+                <span class="quote-text">"The limits of my language are the limits of my world."</span>
+                <span class="quote-author">— Ludwig Wittgenstein</span>
+            </div>
             <div class="date-pill" id="dateDisplay"></div>
         </header>
 
@@ -320,6 +327,48 @@
                 </div>
             </div>
             
+            <!-- Music Player Panel -->
+            <div class="music-panel panel" id="musicPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🎵 Relaxing Music</h2>
+                    <button class="btn-close-panel" id="closeMusicBtn">✕</button>
+                </div>
+                <div class="music-content">
+                    <div class="music-controls">
+                        <button class="btn-main" id="playPauseBtn">
+                            <span id="playPauseIcon">▶</span>
+                            <span id="playPauseText">Play</span>
+                        </button>
+                        <div class="music-info">
+                            <span class="music-title" id="musicTitle">Peaceful Study</span>
+                            <div class="volume-control">
+                                <span>🔊</span>
+                                <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
+                                <span id="volumeValue">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="music-tracks">
+                        <button class="music-track-btn active" data-track="1">
+                            <span class="track-icon">🎹</span>
+                            <span class="track-name">Peaceful Study</span>
+                        </button>
+                        <button class="music-track-btn" data-track="2">
+                            <span class="track-icon">🌊</span>
+                            <span class="track-name">Ocean Waves</span>
+                        </button>
+                        <button class="music-track-btn" data-track="3">
+                            <span class="track-icon">🍃</span>
+                            <span class="track-name">Nature Sounds</span>
+                        </button>
+                        <button class="music-track-btn" data-track="4">
+                            <span class="track-icon">🎻</span>
+                            <span class="track-name">Classical Focus</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Word Lists Panel -->
             <div class="lists-panel panel" id="listsPanel" style="display: none;">
                 <div class="panel-header">
@@ -455,6 +504,11 @@
         </div>
     </div>
 
+    <!-- Hidden Audio Element -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
     <script src="words.js"></script>
     <script src="app.js"></script>
 </body>

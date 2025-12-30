@@ -113,6 +113,166 @@ const ThemeManager = {
 };
 
 // ═══════════════════════════════════════════════════════════════
+// MOTIVATIONAL QUOTES
+// ═══════════════════════════════════════════════════════════════
+
+const MOTIVATIONAL_QUOTES = [
+    { text: "The limits of my language are the limits of my world.", author: "Ludwig Wittgenstein" },
+    { text: "Words are, of course, the most powerful drug used by mankind.", author: "Rudyard Kipling" },
+    { text: "Language is the road map of a culture. It tells you where its people come from and where they are going.", author: "Rita Mae Brown" },
+    { text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss" },
+    { text: "Words have no power to impress the mind without the exquisite horror of their reality.", author: "Edgar Allan Poe" },
+    { text: "A word after a word after a word is power.", author: "Margaret Atwood" },
+    { text: "The difference between the right word and the almost right word is the difference between lightning and a lightning bug.", author: "Mark Twain" },
+    { text: "One language sets you in a corridor for life. Two languages open every door along the way.", author: "Frank Smith" },
+    { text: "Learning never exhausts the mind.", author: "Leonardo da Vinci" },
+    { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+    { text: "Every word you learn is a new tool in your arsenal.", author: "Unknown" },
+    { text: "Knowledge of words is knowledge of the world.", author: "Unknown" },
+    { text: "Expand your vocabulary, expand your mind.", author: "Unknown" },
+    { text: "One new word a day keeps ignorance away.", author: "Unknown" },
+    { text: "Words are the currency of communication.", author: "Unknown" }
+];
+
+const QuoteManager = {
+    currentIndex: 0,
+    init() {
+        const saved = Storage.get('quoteIndex', 0);
+        this.currentIndex = saved;
+        this.display();
+        // Rotate quote every 30 seconds
+        setInterval(() => {
+            this.rotate();
+        }, 30000);
+    },
+    rotate() {
+        this.currentIndex = (this.currentIndex + 1) % MOTIVATIONAL_QUOTES.length;
+        Storage.set('quoteIndex', this.currentIndex);
+        this.display();
+    },
+    display() {
+        const quote = MOTIVATIONAL_QUOTES[this.currentIndex];
+        const container = document.getElementById('motivationalQuote');
+        if (container) {
+            container.querySelector('.quote-text').textContent = `"${quote.text}"`;
+            container.querySelector('.quote-author').textContent = `— ${quote.author}`;
+        }
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// MUSIC MANAGER
+// ═══════════════════════════════════════════════════════════════
+
+const MUSIC_TRACKS = [
+    {
+        name: "Peaceful Study",
+        icon: "🎹",
+        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    },
+    {
+        name: "Ocean Waves",
+        icon: "🌊",
+        url: "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav"
+    },
+    {
+        name: "Nature Sounds",
+        icon: "🍃",
+        url: "https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav"
+    },
+    {
+        name: "Classical Focus",
+        icon: "🎻",
+        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    }
+];
+
+const MusicManager = {
+    audio: null,
+    currentTrack: 0,
+    isPlaying: false,
+    volume: 0.5,
+    
+    init() {
+        this.audio = document.getElementById('backgroundMusic');
+        if (!this.audio) return;
+        
+        const saved = Storage.get('music', { track: 0, volume: 50, playing: false });
+        this.currentTrack = saved.track || 0;
+        this.volume = saved.volume / 100 || 0.5;
+        this.audio.volume = this.volume;
+        
+        if (saved.playing) {
+            this.loadTrack(this.currentTrack);
+            setTimeout(() => this.play(), 500);
+        }
+        
+        this.updateUI();
+    },
+    
+    loadTrack(index) {
+        if (!this.audio || index < 0 || index >= MUSIC_TRACKS.length) return;
+        this.currentTrack = index;
+        const track = MUSIC_TRACKS[index];
+        this.audio.src = track.url;
+        this.audio.load();
+        Storage.set('music', { track: index, volume: this.volume * 100, playing: this.isPlaying });
+        this.updateUI();
+    },
+    
+    play() {
+        if (!this.audio) return;
+        this.audio.play().then(() => {
+            this.isPlaying = true;
+            this.updateUI();
+            Storage.set('music', { track: this.currentTrack, volume: this.volume * 100, playing: true });
+        }).catch(err => {
+            console.log('Music play failed:', err);
+            showNotification('Music requires user interaction first');
+        });
+    },
+    
+    pause() {
+        if (!this.audio) return;
+        this.audio.pause();
+        this.isPlaying = false;
+        this.updateUI();
+        Storage.set('music', { track: this.currentTrack, volume: this.volume * 100, playing: false });
+    },
+    
+    toggle() {
+        if (this.isPlaying) this.pause();
+        else this.play();
+    },
+    
+    setVolume(value) {
+        this.volume = value / 100;
+        if (this.audio) this.audio.volume = this.volume;
+        document.getElementById('volumeValue').textContent = value + '%';
+        Storage.set('music', { track: this.currentTrack, volume: value, playing: this.isPlaying });
+    },
+    
+    updateUI() {
+        const icon = document.getElementById('playPauseIcon');
+        const text = document.getElementById('playPauseText');
+        const title = document.getElementById('musicTitle');
+        const musicBtn = document.getElementById('musicBtn');
+        
+        if (icon) icon.textContent = this.isPlaying ? '⏸' : '▶';
+        if (text) text.textContent = this.isPlaying ? 'Pause' : 'Play';
+        if (title && MUSIC_TRACKS[this.currentTrack]) title.textContent = MUSIC_TRACKS[this.currentTrack].name;
+        if (musicBtn) {
+            const musicIcon = musicBtn.querySelector('.music-icon');
+            if (musicIcon) musicIcon.style.opacity = this.isPlaying ? '1' : '0.6';
+        }
+        
+        document.querySelectorAll('.music-track-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === this.currentTrack);
+        });
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
 // STREAK SYSTEM
 // ═══════════════════════════════════════════════════════════════
 
@@ -659,7 +819,7 @@ function formatDate(d) {
 // ═══════════════════════════════════════════════════════════════
 
 function closePanels() {
-    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel'].forEach(id => document.getElementById(id).style.display = 'none');
+    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel', 'musicPanel'].forEach(id => document.getElementById(id).style.display = 'none');
     document.getElementById('wordCard').style.display = 'block';
 }
 
@@ -692,6 +852,8 @@ let particles = null;
 
 function init() {
     ThemeManager.init();
+    QuoteManager.init();
+    MusicManager.init();
     initReducedMotion();
     StreakManager.display();
     
@@ -735,6 +897,11 @@ function init() {
     });
     
     // Top bar
+    document.getElementById('musicBtn').addEventListener('click', () => {
+        closePanels();
+        document.getElementById('musicPanel').style.display = 'block';
+        document.getElementById('wordCard').style.display = 'none';
+    });
     document.getElementById('themeBtn').addEventListener('click', () => ThemeManager.toggle());
     document.getElementById('statsBtn').addEventListener('click', () => { closePanels(); StatsManager.render(); document.getElementById('statsPanel').style.display = 'block'; document.getElementById('wordCard').style.display = 'none'; });
     document.getElementById('badgesBtn').addEventListener('click', () => { closePanels(); BadgeManager.render(); document.getElementById('badgesPanel').style.display = 'block'; document.getElementById('wordCard').style.display = 'none'; });
@@ -751,9 +918,23 @@ function init() {
     // Close buttons
     document.getElementById('closeStatsBtn').addEventListener('click', closePanels);
     document.getElementById('closeBadgesBtn').addEventListener('click', closePanels);
+    document.getElementById('closeMusicBtn').addEventListener('click', closePanels);
     document.getElementById('closeListsBtn').addEventListener('click', closePanels);
     document.getElementById('closeFilterBtn').addEventListener('click', closePanels);
     document.getElementById('closeFavoritesBtn').addEventListener('click', closePanels);
+    
+    // Music controls
+    document.getElementById('playPauseBtn').addEventListener('click', () => MusicManager.toggle());
+    document.getElementById('volumeSlider').addEventListener('input', (e) => MusicManager.setVolume(e.target.value));
+    document.querySelectorAll('.music-track-btn').forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            MusicManager.loadTrack(idx);
+            if (MusicManager.isPlaying) {
+                MusicManager.pause();
+                setTimeout(() => MusicManager.play(), 100);
+            }
+        });
+    });
     document.getElementById('closeQuizBtn').addEventListener('click', () => QuizManager.end());
     document.getElementById('closeFlashcardBtn').addEventListener('click', () => FlashcardManager.end());
     document.getElementById('closeChallengeBtn').addEventListener('click', () => ChallengeManager.end());
