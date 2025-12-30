@@ -6,7 +6,9 @@ const wordsDatabase = [
         definition: "The occurrence and development of events by chance in a happy or beneficial way.",
         example: "Finding that rare book in the library was pure serendipity.",
         etymology: "Coined by Horace Walpole in 1754, from the Persian fairy tale 'The Three Princes of Serendip' (Serendip being the old name for Sri Lanka), whose heroes were always making discoveries by accident.",
-        partOfSpeech: "noun"
+        partOfSpeech: "noun",
+        difficulty: "intermediate",
+        related: ["Fortuitous", "Providence", "Kismet"]
     },
     {
         word: "Ephemeral",
@@ -14,7 +16,9 @@ const wordsDatabase = [
         definition: "Lasting for a very short time; transient.",
         example: "The beauty of cherry blossoms is ephemeral, lasting only a few weeks each spring.",
         etymology: "From Greek 'ephemeros' meaning 'lasting only a day', from 'epi-' (upon) + 'hemera' (day).",
-        partOfSpeech: "adjective"
+        partOfSpeech: "adjective",
+        difficulty: "intermediate",
+        related: ["Transient", "Fleeting", "Evanescent"]
     },
     {
         word: "Mellifluous",
@@ -22,7 +26,9 @@ const wordsDatabase = [
         definition: "Having a sweet, musical, pleasant sound; flowing like honey.",
         example: "The singer's mellifluous voice captivated the entire audience.",
         etymology: "From Latin 'mellifluus', from 'mel' (honey) + 'fluere' (to flow).",
-        partOfSpeech: "adjective"
+        partOfSpeech: "adjective",
+        difficulty: "advanced",
+        related: ["Dulcet", "Sonorous", "Euphonious"]
     },
     {
         word: "Petrichor",
@@ -30,7 +36,9 @@ const wordsDatabase = [
         definition: "The pleasant earthy smell that accompanies the first rain after a period of warm, dry weather.",
         example: "After weeks of drought, the petrichor filled the air as the rain began to fall.",
         etymology: "Coined in 1964 by Australian researchers, from Greek 'petra' (stone) + 'ichor' (the fluid that flows in the veins of the gods in Greek mythology).",
-        partOfSpeech: "noun"
+        partOfSpeech: "noun",
+        difficulty: "advanced",
+        related: ["Redolent", "Fragrant", "Aromatic"]
     },
     {
         word: "Quixotic",
@@ -38,7 +46,9 @@ const wordsDatabase = [
         definition: "Extremely idealistic; unrealistic and impractical.",
         example: "His quixotic quest to save every stray cat in the city was admirable but exhausting.",
         etymology: "From Don Quixote, the hero of Miguel de Cervantes' novel, who was known for his chivalrous but impractical adventures.",
-        partOfSpeech: "adjective"
+        partOfSpeech: "adjective",
+        difficulty: "intermediate",
+        related: ["Idealistic", "Romantic", "Utopian"]
     },
     {
         word: "Luminous",
@@ -46,7 +56,9 @@ const wordsDatabase = [
         definition: "Full of or shedding light; bright or shining, especially in the dark.",
         example: "The luminous moon cast an ethereal glow over the quiet lake.",
         etymology: "From Latin 'luminosus', from 'lumen' (light).",
-        partOfSpeech: "adjective"
+        partOfSpeech: "adjective",
+        difficulty: "beginner",
+        related: ["Radiant", "Brilliant", "Incandescent"]
     },
     {
         word: "Resilient",

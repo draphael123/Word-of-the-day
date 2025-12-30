@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,14 +29,23 @@
             <span class="streak-count" id="streakCount">0</span>
         </div>
         <div class="top-bar-actions">
+            <button class="btn-icon-only" id="themeBtn" title="Toggle theme">
+                <span class="theme-icon">☀️</span>
+            </button>
+            <button class="btn-icon-only" id="statsBtn" title="Progress dashboard">
+                <span>📊</span>
+            </button>
+            <button class="btn-icon-only" id="badgesBtn" title="Achievements">
+                <span>🏆</span>
+            </button>
+            <button class="btn-icon-only" id="listsBtn" title="Word lists">
+                <span>📝</span>
+            </button>
             <button class="btn-icon-only" id="filterBtn" title="Filter by category">
                 <span>⚙️</span>
             </button>
             <button class="btn-icon-only" id="favoritesBtn" title="View favorites">
                 <span>❤️</span>
-            </button>
-            <button class="btn-icon-only" id="quizBtn" title="Quiz mode">
-                <span>🧠</span>
             </button>
             <button class="btn-icon-only" id="helpBtn" title="Keyboard shortcuts">
                 <span>?</span>
@@ -71,6 +80,7 @@
                     <div class="word-meta">
                         <span class="word-count">#<span id="wordNumber">1</span></span>
                         <span class="pos-tag" id="partOfSpeech"></span>
+                        <span class="difficulty-tag" id="difficultyTag">Intermediate</span>
                     </div>
                     <h2 class="word" id="word">Loading...</h2>
                     <div class="pronunciation-row">
@@ -105,10 +115,29 @@
                         </div>
                         <p class="etymology" id="etymology"></p>
                     </section>
+                    
+                    <section class="detail-block related-block">
+                        <div class="block-header">
+                            <span class="block-icon">🔗</span>
+                            <h3 class="block-title">RELATED WORDS</h3>
+                        </div>
+                        <div class="related-words" id="relatedWords"></div>
+                    </section>
+                </div>
+                
+                <!-- Spaced Repetition Controls -->
+                <div class="srs-controls" id="srsControls">
+                    <p class="srs-prompt">How well did you know this word?</p>
+                    <div class="srs-buttons">
+                        <button class="srs-btn srs-again" data-rating="1" title="Review again soon">😕 Again</button>
+                        <button class="srs-btn srs-hard" data-rating="2" title="Was difficult">🤔 Hard</button>
+                        <button class="srs-btn srs-good" data-rating="3" title="Remembered it">😊 Good</button>
+                        <button class="srs-btn srs-easy" data-rating="4" title="Too easy!">🎯 Easy</button>
+                    </div>
                 </div>
             </article>
 
-            <!-- Quiz Card (hidden by default) -->
+            <!-- Quiz Card -->
             <article class="word-card quiz-card" id="quizCard" style="display: none;">
                 <div class="card-glow"></div>
                 
@@ -121,9 +150,7 @@
                     <h3 class="quiz-prompt">What word matches this definition?</h3>
                     <p class="quiz-definition" id="quizDefinition"></p>
                     
-                    <div class="quiz-options" id="quizOptions">
-                        <!-- Options inserted by JS -->
-                    </div>
+                    <div class="quiz-options" id="quizOptions"></div>
                     
                     <div class="quiz-feedback" id="quizFeedback"></div>
                     
@@ -132,20 +159,64 @@
                     </button>
                 </div>
             </article>
+            
+            <!-- Daily Challenge Card -->
+            <article class="word-card challenge-card" id="challengeCard" style="display: none;">
+                <div class="card-glow"></div>
+                
+                <div class="challenge-header">
+                    <span class="challenge-type" id="challengeType">🎯 DAILY CHALLENGE</span>
+                    <button class="btn-close-quiz" id="closeChallengeBtn">✕</button>
+                </div>
+                
+                <div class="challenge-content" id="challengeContent">
+                    <!-- Challenge content inserted by JS -->
+                </div>
+            </article>
+            
+            <!-- Flashcard Mode -->
+            <article class="word-card flashcard-card" id="flashcardCard" style="display: none;">
+                <div class="card-glow"></div>
+                
+                <div class="flashcard-header">
+                    <span class="flashcard-progress"><span id="flashcardCurrent">1</span>/<span id="flashcardTotal">10</span></span>
+                    <button class="btn-close-quiz" id="closeFlashcardBtn">✕</button>
+                </div>
+                
+                <div class="flashcard-container" id="flashcardContainer">
+                    <div class="flashcard" id="flashcard">
+                        <div class="flashcard-front">
+                            <h2 class="flashcard-word" id="flashcardWord"></h2>
+                            <p class="flashcard-hint">Tap to reveal</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <p class="flashcard-definition" id="flashcardDefinition"></p>
+                            <p class="flashcard-example" id="flashcardExample"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flashcard-actions">
+                    <button class="flashcard-btn flashcard-dont-know" id="flashcardDontKnow">
+                        ❌ Don't Know
+                    </button>
+                    <button class="flashcard-btn flashcard-know" id="flashcardKnow">
+                        ✓ Know It
+                    </button>
+                </div>
+            </article>
 
-            <!-- Favorites Panel (hidden by default) -->
-            <div class="favorites-panel" id="favoritesPanel" style="display: none;">
+            <!-- Favorites Panel -->
+            <div class="favorites-panel panel" id="favoritesPanel" style="display: none;">
                 <div class="panel-header">
                     <h2 class="panel-title">❤️ Your Favorites</h2>
                     <button class="btn-close-panel" id="closeFavoritesBtn">✕</button>
                 </div>
-                <div class="favorites-list" id="favoritesList">
-                    <!-- Favorites inserted by JS -->
-                </div>
+                <div class="favorites-list" id="favoritesList"></div>
             </div>
 
-            <!-- Filter Panel (hidden by default) -->
-            <div class="filter-panel" id="filterPanel" style="display: none;">
+            <!-- Filter Panel -->
+            <div class="filter-panel panel" id="filterPanel" style="display: none;">
                 <div class="panel-header">
                     <h2 class="panel-title">⚙️ Filter Words</h2>
                     <button class="btn-close-panel" id="closeFilterBtn">✕</button>
@@ -161,8 +232,121 @@
                             <button class="filter-chip" data-filter="adverb">Adverb</button>
                         </div>
                     </div>
+                    <div class="filter-group">
+                        <h4 class="filter-label">Difficulty</h4>
+                        <div class="filter-buttons" id="diffFilters">
+                            <button class="filter-chip active" data-diff="all">All</button>
+                            <button class="filter-chip" data-diff="beginner">Beginner</button>
+                            <button class="filter-chip" data-diff="intermediate">Intermediate</button>
+                            <button class="filter-chip" data-diff="advanced">Advanced</button>
+                        </div>
+                    </div>
                     <div class="filter-stats" id="filterStats">
                         Showing all 129 words
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Dashboard -->
+            <div class="stats-panel panel" id="statsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">📊 Progress Dashboard</h2>
+                    <button class="btn-close-panel" id="closeStatsBtn">✕</button>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-icon">📚</span>
+                            <span class="stat-value" id="statWordsLearned">0</span>
+                            <span class="stat-label">Words Learned</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🔥</span>
+                            <span class="stat-value" id="statCurrentStreak">0</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🎯</span>
+                            <span class="stat-value" id="statQuizAccuracy">0%</span>
+                            <span class="stat-label">Quiz Accuracy</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">⭐</span>
+                            <span class="stat-value" id="statFavorites">0</span>
+                            <span class="stat-label">Favorites</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🏆</span>
+                            <span class="stat-value" id="statBadges">0</span>
+                            <span class="stat-label">Badges Earned</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">📅</span>
+                            <span class="stat-value" id="statTotalDays">0</span>
+                            <span class="stat-label">Total Days</span>
+                        </div>
+                    </div>
+                    <div class="stats-section">
+                        <h3 class="stats-section-title">Words by Mastery</h3>
+                        <div class="mastery-bars">
+                            <div class="mastery-row">
+                                <span class="mastery-label">New</span>
+                                <div class="mastery-bar"><div class="mastery-fill new" id="masteryNew" style="width: 60%"></div></div>
+                                <span class="mastery-count" id="masteryNewCount">78</span>
+                            </div>
+                            <div class="mastery-row">
+                                <span class="mastery-label">Learning</span>
+                                <div class="mastery-bar"><div class="mastery-fill learning" id="masteryLearning" style="width: 25%"></div></div>
+                                <span class="mastery-count" id="masteryLearningCount">32</span>
+                            </div>
+                            <div class="mastery-row">
+                                <span class="mastery-label">Mastered</span>
+                                <div class="mastery-bar"><div class="mastery-fill mastered" id="masteryMastered" style="width: 15%"></div></div>
+                                <span class="mastery-count" id="masteryMasteredCount">19</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Badges Panel -->
+            <div class="badges-panel panel" id="badgesPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🏆 Achievements</h2>
+                    <button class="btn-close-panel" id="closeBadgesBtn">✕</button>
+                </div>
+                <div class="badges-grid" id="badgesGrid">
+                    <!-- Badges inserted by JS -->
+                </div>
+            </div>
+            
+            <!-- Word Lists Panel -->
+            <div class="lists-panel panel" id="listsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">📝 Word Lists</h2>
+                    <button class="btn-close-panel" id="closeListsBtn">✕</button>
+                </div>
+                <div class="lists-content">
+                    <button class="btn-create-list" id="createListBtn">+ Create New List</button>
+                    <div class="lists-container" id="listsContainer">
+                        <!-- Lists inserted by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create List Modal -->
+            <div class="modal" id="createListModal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>📝 Create New List</h2>
+                        <button class="btn-close-modal" id="closeCreateListBtn">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="newListName" class="input-field" placeholder="List name (e.g., SAT Prep)">
+                        <textarea id="newListDesc" class="input-field textarea" placeholder="Description (optional)"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-main" id="saveListBtn">Create List</button>
                     </div>
                 </div>
             </div>
@@ -175,6 +359,18 @@
                 
                 <button class="btn-accent" id="randomBtn" title="Random word">
                     <span class="btn-icon">🎲</span>
+                </button>
+                
+                <button class="btn-accent" id="flashcardBtn" title="Flashcard mode">
+                    <span class="btn-icon">🃏</span>
+                </button>
+                
+                <button class="btn-accent" id="challengeBtn" title="Daily challenge">
+                    <span class="btn-icon">🎯</span>
+                </button>
+                
+                <button class="btn-accent" id="quizBtn" title="Quiz mode">
+                    <span class="btn-icon">🧠</span>
                 </button>
                 
                 <button class="btn-main" id="shareBtn">
@@ -228,6 +424,14 @@
                     <span class="shortcut-desc">Start quiz</span>
                 </div>
                 <div class="shortcut-row">
+                    <span class="shortcut-key">C</span>
+                    <span class="shortcut-desc">Daily challenge</span>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-key">T</span>
+                    <span class="shortcut-desc">Toggle theme</span>
+                </div>
+                <div class="shortcut-row">
                     <span class="shortcut-key">?</span>
                     <span class="shortcut-desc">Show this help</span>
                 </div>
@@ -239,6 +443,15 @@
                     <span class="toggle-slider"></span>
                 </label>
             </div>
+        </div>
+    </div>
+    
+    <!-- Badge Unlocked Toast -->
+    <div class="badge-toast" id="badgeToast" style="display: none;">
+        <span class="badge-toast-icon" id="badgeToastIcon">🏆</span>
+        <div class="badge-toast-content">
+            <span class="badge-toast-title">Badge Unlocked!</span>
+            <span class="badge-toast-name" id="badgeToastName"></span>
         </div>
     </div>
 
