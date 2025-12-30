@@ -819,7 +819,7 @@ function formatDate(d) {
 // ═══════════════════════════════════════════════════════════════
 
 function closePanels() {
-    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel', 'musicPanel', 'calendarPanel', 'journalPanel', 'exportPanel', 'gamesPanel', 'learningPathPanel', 'leaderboardPanel', 'submissionsPanel', 'discussionsPanel', 'themesPanel'].forEach(id => {
+    ['favoritesPanel', 'filterPanel', 'statsPanel', 'badgesPanel', 'listsPanel', 'musicPanel', 'calendarPanel', 'journalPanel', 'exportPanel', 'gamesPanel', 'learningPathPanel', 'leaderboardPanel', 'submissionsPanel', 'discussionsPanel', 'themesPanel', 'reportsPanel', 'languagePanel', 'illustrationPanel'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
@@ -960,6 +960,9 @@ function init() {
     document.getElementById('closeSubmissionsBtn')?.addEventListener('click', closePanels);
     document.getElementById('closeDiscussionsBtn')?.addEventListener('click', closePanels);
     document.getElementById('closeThemesBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeReportsBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeLanguageBtn')?.addEventListener('click', closePanels);
+    document.getElementById('closeIllustrationBtn')?.addEventListener('click', closePanels);
     
     // Music controls
     document.getElementById('playPauseBtn').addEventListener('click', () => MusicManager.toggle());
@@ -1386,6 +1389,93 @@ const EnhancedThemeManager = {
         document.documentElement.setAttribute('data-theme', theme);
         Storage.set('theme', theme);
         ThemeManager.updateIcon(theme === 'dark' ? 'dark' : 'light');
+    }
+};
+
+// Reports Manager
+const ReportsManager = {
+    getSettings() { return Storage.get('reportSettings', { weekly: false, monthly: false, email: '' }); },
+    saveSettings() {
+        const settings = {
+            weekly: document.getElementById('weeklyReportToggle').checked,
+            monthly: document.getElementById('monthlyReportToggle').checked,
+            email: document.getElementById('reportEmail').value
+        };
+        Storage.set('reportSettings', settings);
+        showNotification('Report settings saved! (Backend required for actual emails)');
+    },
+    generateWeeklyReport() {
+        const stats = Storage.get('quizStats', {});
+        const streak = StreakManager.getStreak();
+        const favs = FavoritesManager.get();
+        return `Weekly Report:\n\nWords Learned: ${favs.length}\nStreak: ${streak.count} days\nQuiz Accuracy: ${stats.total > 0 ? (stats.correct / stats.total * 100).toFixed(1) : 0}%`;
+    },
+    generateMonthlyReport() {
+        const stats = Storage.get('quizStats', {});
+        const streak = StreakManager.getStreak();
+        const favs = FavoritesManager.get();
+        const badges = BadgeManager.getUnlocked();
+        return `Monthly Report:\n\nWords Learned: ${favs.length}\nCurrent Streak: ${streak.count} days\nTotal Days: ${streak.totalDays || 0}\nQuiz Accuracy: ${stats.total > 0 ? (stats.correct / stats.total * 100).toFixed(1) : 0}%\nBadges Earned: ${badges.length}`;
+    }
+};
+
+// Multi-language Manager
+const LanguageManager = {
+    currentLang: 'en',
+    init() {
+        const saved = Storage.get('language', 'en');
+        this.currentLang = saved;
+        document.getElementById('languageSelect').value = saved;
+    },
+    setLanguage(lang) {
+        this.currentLang = lang;
+        Storage.set('language', lang);
+        showNotification(`Language set to ${lang.toUpperCase()} (Full translation requires word database)`);
+    }
+};
+
+// Word Illustration Manager
+const IllustrationManager = {
+    generate(word) {
+        // Generate simple visual representation
+        const container = document.getElementById('wordIllustration');
+        const emojiMap = {
+            'serendipity': '✨', 'ephemeral': '🌸', 'mellifluous': '🎵',
+            'petrichor': '🌧️', 'quixotic': '⚔️', 'luminous': '💡',
+            'resilient': '🌱', 'eloquent': '📝', 'ineffable': '🌟',
+            'wanderlust': '✈️'
+        };
+        const emoji = emojiMap[word.word.toLowerCase()] || '📚';
+        container.innerHTML = `
+            <div class="illustration-display">
+                <div class="illustration-emoji">${emoji}</div>
+                <h3 class="illustration-word">${word.word}</h3>
+                <p class="illustration-desc">Visual memory aid for "${word.word}"</p>
+            </div>
+        `;
+    }
+};
+
+// AI Features (Basic)
+const AIFeatures = {
+    generateExample(word) {
+        // Simple example generation (in real app, use AI API)
+        return `"The ${word.word} of the situation was immediately apparent to all observers."`;
+    },
+    suggestRelated(word) {
+        // Simple related word suggestion
+        const related = wordsDatabase.filter(w => 
+            w.word !== word.word && 
+            (w.partOfSpeech === word.partOfSpeech || 
+             w.definition.toLowerCase().includes(word.word.toLowerCase().slice(0, 4)))
+        ).slice(0, 3);
+        return related.map(w => w.word);
+    },
+    adaptDifficulty(performance) {
+        // Adaptive difficulty based on performance
+        if (performance > 0.8) return 'advanced';
+        if (performance > 0.5) return 'intermediate';
+        return 'beginner';
     }
 };
 

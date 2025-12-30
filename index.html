@@ -450,6 +450,67 @@
                 </div>
             </div>
             
+            <!-- Reports Panel -->
+            <div class="reports-panel panel" id="reportsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">📧 Email Reports</h2>
+                    <button class="btn-close-panel" id="closeReportsBtn">✕</button>
+                </div>
+                <div class="reports-content">
+                    <div class="report-settings">
+                        <label class="toggle-row">
+                            <span>Weekly Report</span>
+                            <input type="checkbox" id="weeklyReportToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-row">
+                            <span>Monthly Report</span>
+                            <input type="checkbox" id="monthlyReportToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <input type="email" class="input-field" id="reportEmail" placeholder="Your email">
+                        <button class="btn-main" id="saveReportSettingsBtn">Save Settings</button>
+                        <p class="report-note">Note: Email reports require backend setup. Currently saves preferences locally.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Multi-language Panel -->
+            <div class="language-panel panel" id="languagePanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🌍 Language Settings</h2>
+                    <button class="btn-close-panel" id="closeLanguageBtn">✕</button>
+                </div>
+                <div class="language-content">
+                    <select class="input-field" id="languageSelect">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Spanish</option>
+                        <option value="fr">🇫🇷 French</option>
+                        <option value="de">🇩🇪 German</option>
+                        <option value="it">🇮🇹 Italian</option>
+                        <option value="pt">🇵🇹 Portuguese</option>
+                    </select>
+                    <p class="language-note">Note: Full translation requires additional word databases.</p>
+                </div>
+            </div>
+            
+            <!-- Word Illustration Panel -->
+            <div class="illustration-panel panel" id="illustrationPanel" style="display: none;">
+                <div class="panel-header">
+                    <h2 class="panel-title">🎨 Word Illustration</h2>
+                    <button class="btn-close-panel" id="closeIllustrationBtn">✕</button>
+                </div>
+                <div class="illustration-content">
+                    <div class="word-illustration" id="wordIllustration">
+                        <div class="illustration-placeholder">
+                            <span class="illustration-icon">🎨</span>
+                            <p>Visual representation of the word</p>
+                            <p class="illustration-hint">Illustrations help with memory retention</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Additional Games Panel -->
             <div class="games-panel panel" id="gamesPanel" style="display: none;">
                 <div class="panel-header">
